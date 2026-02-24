@@ -42,6 +42,7 @@ namespace TarodevController
         {
             _time += Time.deltaTime;
             GatherInput();
+            
         }
 
         private void GatherInput()
@@ -127,7 +128,7 @@ namespace TarodevController
         private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + _stats.JumpBuffer;
         private bool CanUseCoyote => _coyoteUsable && !_grounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
 
-        private void HandleJump()
+        public void HandleJump()
         {
             if (!_endedJumpEarly && !_grounded && !_frameInput.JumpHeld && _rb.linearVelocity.y > 0) _endedJumpEarly = true;
 
@@ -138,7 +139,7 @@ namespace TarodevController
             _jumpToConsume = false;
         }
 
-        private void ExecuteJump()
+        public void ExecuteJump()
         {
             _endedJumpEarly = false;
             _timeJumpWasPressed = 0;
