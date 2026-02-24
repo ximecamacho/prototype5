@@ -9152,7 +9152,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4424039534409078155, guid: 2c2002ce06ce9584b9d5e94bf89a54a5, type: 3}
       propertyPath: _colorSequence.Array.size
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4424039534409078155, guid: 2c2002ce06ce9584b9d5e94bf89a54a5, type: 3}
       propertyPath: '_colorSequence.Array.data[0]'
