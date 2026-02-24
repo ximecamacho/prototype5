@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
@@ -9,6 +10,10 @@ public class PauseMenu : MonoBehaviour
     private GameObject _pausePanel;
     private Toggle _debugToggle;
     private Toggle _pitchToggle;
+    private Slider _sensitivitySlider;
+    private Text _sensitivityLabel;
+    private Slider _noiseGateSlider;
+    private Text _noiseGateLabel;
 
     private void Start()
     {
@@ -35,6 +40,16 @@ public class PauseMenu : MonoBehaviour
         _isPaused = true;
         _pausePanel.SetActive(true);
         Time.timeScale = 0f;
+
+        if (_micInput != null)
+        {
+            _sensitivitySlider.SetValueWithoutNotify(_micInput.Sensitivity);
+            _sensitivityLabel.text = _micInput.Sensitivity.ToString("F0");
+            _noiseGateSlider.SetValueWithoutNotify(_micInput.NoiseGate);
+            _noiseGateLabel.text = _micInput.NoiseGate.ToString("F4");
+            _pitchToggle.SetIsOnWithoutNotify(_micInput.UsePitch);
+            _debugToggle.SetIsOnWithoutNotify(_micInput.DebugMode);
+        }
     }
 
     private void Resume()
@@ -59,6 +74,13 @@ public class PauseMenu : MonoBehaviour
         canvasGO.GetComponent<CanvasScaler>().referenceResolution = new Vector2(1920, 1080);
         canvasGO.AddComponent<GraphicRaycaster>();
 
+        if (FindFirstObjectByType<EventSystem>() == null)
+        {
+            var esGO = new GameObject("EventSystem");
+            esGO.AddComponent<EventSystem>();
+            esGO.AddComponent<StandaloneInputModule>();
+        }
+
         _pausePanel = CreatePanel(canvasGO.transform);
 
         CreateLabel(_pausePanel.transform, "PAUSED", 60, new Vector2(0, 120));
@@ -80,7 +102,24 @@ public class PauseMenu : MonoBehaviour
                 _micInput.UsePitch = isOn;
         });
 
-        CreateLabel(_pausePanel.transform, "Debug:  Hold [,] = Yellow   Hold [.] = Red", 20, new Vector2(0, -160));
+        _sensitivitySlider = CreateSlider(_pausePanel.transform, "Sensitivity", new Vector2(0, -160),
+            1f, 200f, _micInput != null ? _micInput.Sensitivity : 45f, out _sensitivityLabel);
+        _sensitivitySlider.wholeNumbers = true;
+        _sensitivitySlider.onValueChanged.AddListener(val =>
+        {
+            if (_micInput != null) _micInput.Sensitivity = val;
+            _sensitivityLabel.text = val.ToString("F0");
+        });
+
+        _noiseGateSlider = CreateSlider(_pausePanel.transform, "Noise Gate", new Vector2(0, -230),
+            0f, 0.05f, _micInput != null ? _micInput.NoiseGate : 0.005f, out _noiseGateLabel);
+        _noiseGateSlider.onValueChanged.AddListener(val =>
+        {
+            if (_micInput != null) _micInput.NoiseGate = val;
+            _noiseGateLabel.text = val.ToString("F4");
+        });
+
+        CreateLabel(_pausePanel.transform, "Debug:  Hold [,] = Yellow   Hold [.] = Red", 20, new Vector2(0, -290));
     }
 
     private static GameObject CreatePanel(Transform parent)
@@ -116,6 +155,7 @@ public class PauseMenu : MonoBehaviour
         t.color = Color.white;
         t.alignment = TextAnchor.MiddleCenter;
         t.horizontalOverflow = HorizontalWrapMode.Overflow;
+        t.raycastTarget = false;
 
         return t;
     }
@@ -142,6 +182,38 @@ public class PauseMenu : MonoBehaviour
         CreateLabel(go.transform, label, 28, Vector2.zero);
 
         return btn;
+    }
+
+    private static Slider CreateSlider(Transform parent, string label, Vector2 position,
+        float min, float max, float initial, out Text valueLabel)
+    {
+        var go = new GameObject(label + "Slider", typeof(RectTransform));
+        go.transform.SetParent(parent, false);
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchoredPosition = position;
+        rt.sizeDelta = new Vector2(500, 50);
+
+        CreateLabel(go.transform, label, 22, new Vector2(-200, 0));
+
+        var sliderGO = DefaultControls.CreateSlider(new DefaultControls.Resources());
+        sliderGO.transform.SetParent(go.transform, false);
+        var sliderRT = sliderGO.GetComponent<RectTransform>();
+        sliderRT.anchoredPosition = new Vector2(30, 0);
+        sliderRT.sizeDelta = new Vector2(250, 20);
+
+        sliderGO.transform.Find("Background").GetComponent<Image>().color = new Color(0.3f, 0.3f, 0.3f, 1f);
+        sliderGO.transform.Find("Fill Area/Fill").GetComponent<Image>().color = new Color(0.3f, 0.7f, 0.9f, 1f);
+        sliderGO.transform.Find("Handle Slide Area/Handle").GetComponent<Image>().color = Color.white;
+
+        var slider = sliderGO.GetComponent<Slider>();
+        slider.minValue = min;
+        slider.maxValue = max;
+        slider.SetValueWithoutNotify(initial);
+
+        valueLabel = CreateLabel(go.transform, max <= 1f ? initial.ToString("F4") : initial.ToString("F0"),
+            22, new Vector2(210, 0));
+
+        return slider;
     }
 
     private static Toggle CreateToggle(Transform parent, string label, Vector2 position)

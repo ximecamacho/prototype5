@@ -17,11 +17,11 @@ public class MicrophoneInput : MonoBehaviour
     [SerializeField] private float _maxPitch = 800f;
 
     [Header("Volume Sensitivity — only used in Volume mode")]
-    [SerializeField, Range(1f, 200f)] private float _sensitivity = 50f;
+    [SerializeField, Range(1f, 200f)] private float _sensitivity = 45f;
 
     [Header("Shared Settings")]
     [Tooltip("Volume threshold below which input is ignored")]
-    [SerializeField, Range(0f, 0.05f)] private float _noiseGate = 0.008f;
+    [SerializeField, Range(0f, 0.05f)] private float _noiseGate = 0.005f;
     [Tooltip("How fast the bar rises")]
     [SerializeField, Range(1f, 30f)] private float _riseSpeed = 10f;
     [Tooltip("How fast the bar falls")]
@@ -49,6 +49,18 @@ public class MicrophoneInput : MonoBehaviour
     {
         get => _usePitch;
         set => _usePitch = value;
+    }
+
+    public float Sensitivity
+    {
+        get => _sensitivity;
+        set => _sensitivity = Mathf.Clamp(value, 1f, 200f);
+    }
+
+    public float NoiseGate
+    {
+        get => _noiseGate;
+        set => _noiseGate = Mathf.Clamp(value, 0f, 0.05f);
     }
 
     public float YellowThreshold => _yellowThreshold;

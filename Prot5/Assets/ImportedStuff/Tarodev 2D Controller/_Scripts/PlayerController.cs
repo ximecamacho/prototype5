@@ -116,13 +116,12 @@ namespace TarodevController
             Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
         }
 
-        public void OnCollision2D(Collider2D collision)
+        private void OnCollisionEnter2D(Collision2D collision)
         {
-            if(collision.CompareTag("Finish")){
-
+            if (collision.gameObject.CompareTag("Finish"))
+            {
                 winObject.SetActive(true);
                 Time.timeScale = 0;
-
             }
         }
 

@@ -51,16 +51,10 @@ private float movementX = 0;
 
 
 
-        for (int i = 1; i < _zonePlatforms.Length; i++)
+        for (int i = 0; i < _zonePlatforms.Length; i++)
         {
             if (_zonePlatforms[i] != null)
-            {
-                
-                    _zonePlatforms[i].SetActive(i == zone);
-    
-            }
-                
-
+                _zonePlatforms[i].SetActive(i == zone);
         }
 
         
