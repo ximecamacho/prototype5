@@ -51,15 +51,24 @@ private float movementX = 0;
 
 
 
-        for (int i = 0; i < _zonePlatforms.Length; i++)
+        for (int i = 1; i < _zonePlatforms.Length; i++)
         {
             if (_zonePlatforms[i] != null)
-                _zonePlatforms[i].SetActive(i == zone);
+            {
+                
+                    _zonePlatforms[i].SetActive(i == zone);
+    
+            }
+                
 
         }
 
-
-        moveMap();
+        if (zone != 0)
+        {
+            moveMap();
+            
+        }
+        
 
 
 
@@ -71,28 +80,29 @@ private float movementX = 0;
         player.ExecuteJump();
         /*Vector3 movementVector = new Vector3(-10, 0, 0);
         movementX = movementVector.x;*/
-        
 
-        Vector3 move = new Vector3(-4, 0, 0);
+        Vector3 move = new Vector3(-5, 0, 0);
          _environmentObj.transform.Translate(move * speed * Time.deltaTime);
-         _environmentObj.transform.position = _environmentObj.transform.position + new Vector3(-4, 0, 0);
+         _environmentObj.transform.position = _environmentObj.transform.position + new Vector3(-2, 0, 0);
 
 
     }
 
+    
+
     private void FixedUpdate()
     {
-       /*speed = 6f;
-       
+        /*speed = 6f;
 
-            Vector3 movement = new Vector3(movementX, 0.0f, 0);
-            rb.AddForce(movement * speed);*/
 
-        
+             Vector3 movement = new Vector3(movementX, 0.0f, 0);
+             rb.AddForce(movement * speed);*/
 
-       
-        
-        
+
+
+
+
+
     }
     
      
