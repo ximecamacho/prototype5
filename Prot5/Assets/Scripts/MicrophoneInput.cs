@@ -24,6 +24,9 @@ public class MicrophoneInput : MonoBehaviour
     /// <summary>Current zone: 0 = Green (quiet), 1 = Yellow (medium), 2 = Red (loud).</summary>
     public int Zone { get; private set; }
 
+    /// <summary>When true, mic is ignored and comma/period keys control the level.</summary>
+    public bool DebugMode { get; set; }
+
     public float YellowThreshold => _yellowThreshold;
     public float RedThreshold => _redThreshold;
 
@@ -55,11 +58,25 @@ public class MicrophoneInput : MonoBehaviour
 
     private void Update()
     {
-        if (_micClip == null) return;
+        float target;
 
-        float raw = GetRMSLevel();
-        float gated = raw < _noiseGate ? 0f : raw;
-        float target = Mathf.Clamp01(gated * _sensitivity);
+        if (DebugMode)
+        {
+            if (Input.GetKey(KeyCode.Period))
+                target = (_redThreshold + 1f) / 2f;
+            else if (Input.GetKey(KeyCode.Comma))
+                target = (_yellowThreshold + _redThreshold) / 2f;
+            else
+                target = 0f;
+        }
+        else
+        {
+            if (_micClip == null) return;
+
+            float raw = GetRMSLevel();
+            float gated = raw < _noiseGate ? 0f : raw;
+            target = Mathf.Clamp01(gated * _sensitivity);
+        }
 
         Level = Mathf.Lerp(target, Level, _smoothing);
 
