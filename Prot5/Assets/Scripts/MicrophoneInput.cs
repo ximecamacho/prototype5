@@ -26,6 +26,8 @@ public class MicrophoneInput : MonoBehaviour
     [SerializeField, Range(1f, 30f)] private float _riseSpeed = 10f;
     [Tooltip("How fast the bar falls")]
     [SerializeField, Range(1f, 30f)] private float _fallSpeed = 5f;
+    [Tooltip("Number of frames to average over (1 = no smoothing, higher = smoother but laggier)")]
+    [SerializeField, Range(1, 30)] private int _smoothing = 5;
 
     [Header("Zone Thresholds")]
     [Tooltip("Level above which we enter the Yellow zone")]
@@ -63,6 +65,12 @@ public class MicrophoneInput : MonoBehaviour
         set => _noiseGate = Mathf.Clamp(value, 0f, 0.05f);
     }
 
+    public int Smoothing
+    {
+        get => _smoothing;
+        set => _smoothing = Mathf.Clamp(value, 1, 30);
+    }
+
     public float YellowThreshold => _yellowThreshold;
     public float RedThreshold => _redThreshold;
 
@@ -71,6 +79,9 @@ public class MicrophoneInput : MonoBehaviour
     private float[] _sampleBuffer;
     private const int SampleRate = 44100;
     private const int SampleWindow = 2048;
+
+    private float[] _smoothBuffer = new float[30];
+    private int _smoothIndex;
 
     private void Start()
     {
@@ -123,6 +134,17 @@ public class MicrophoneInput : MonoBehaviour
                 target = Mathf.Clamp01(gated * _sensitivity);
             }
         }
+
+        _smoothBuffer[_smoothIndex % _smoothBuffer.Length] = target;
+        _smoothIndex++;
+        int windowSize = Mathf.Clamp(_smoothing, 1, _smoothBuffer.Length);
+        float sum = 0f;
+        for (int i = 0; i < windowSize; i++)
+        {
+            int idx = (_smoothIndex - 1 - i + _smoothBuffer.Length * windowSize) % _smoothBuffer.Length;
+            sum += _smoothBuffer[idx];
+        }
+        target = sum / windowSize;
 
         float speed = target > Level ? _riseSpeed : _fallSpeed;
         Level = Mathf.MoveTowards(Level, target, speed * Time.deltaTime);

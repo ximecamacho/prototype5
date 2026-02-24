@@ -14,6 +14,8 @@ public class PauseMenu : MonoBehaviour
     private Text _sensitivityLabel;
     private Slider _noiseGateSlider;
     private Text _noiseGateLabel;
+    private Slider _smoothingSlider;
+    private Text _smoothingLabel;
 
     private void Start()
     {
@@ -47,6 +49,8 @@ public class PauseMenu : MonoBehaviour
             _sensitivityLabel.text = _micInput.Sensitivity.ToString("F0");
             _noiseGateSlider.SetValueWithoutNotify(_micInput.NoiseGate);
             _noiseGateLabel.text = _micInput.NoiseGate.ToString("F4");
+            _smoothingSlider.SetValueWithoutNotify(_micInput.Smoothing);
+            _smoothingLabel.text = _micInput.Smoothing.ToString("F0");
             _pitchToggle.SetIsOnWithoutNotify(_micInput.UsePitch);
             _debugToggle.SetIsOnWithoutNotify(_micInput.DebugMode);
         }
@@ -119,7 +123,16 @@ public class PauseMenu : MonoBehaviour
             _noiseGateLabel.text = val.ToString("F4");
         });
 
-        CreateLabel(_pausePanel.transform, "Debug:  Hold [,] = Yellow   Hold [.] = Red", 20, new Vector2(0, -290));
+        _smoothingSlider = CreateSlider(_pausePanel.transform, "Smoothing", new Vector2(0, -300),
+            1f, 30f, _micInput != null ? _micInput.Smoothing : 5f, out _smoothingLabel);
+        _smoothingSlider.wholeNumbers = true;
+        _smoothingSlider.onValueChanged.AddListener(val =>
+        {
+            if (_micInput != null) _micInput.Smoothing = (int)val;
+            _smoothingLabel.text = val.ToString("F0");
+        });
+
+        CreateLabel(_pausePanel.transform, "Debug:  Hold [,] = Yellow   Hold [.] = Red", 20, new Vector2(0, -360));
     }
 
     private static GameObject CreatePanel(Transform parent)

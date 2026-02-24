@@ -9,6 +9,8 @@ public class PlayerRespawn : MonoBehaviour
     [Tooltip("How far above the spawn point the player reappears")]
     [SerializeField] private float _respawnHeightOffset = 5f;
 
+    public event System.Action OnRespawn;
+
     private Vector3 _spawnPoint;
     private float _killY;
     private Rigidbody2D _rb;
@@ -42,5 +44,6 @@ public class PlayerRespawn : MonoBehaviour
     {
         _rb.linearVelocity = Vector2.zero;
         transform.position = _spawnPoint + Vector3.up * _respawnHeightOffset;
+        OnRespawn?.Invoke();
     }
 }
