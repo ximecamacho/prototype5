@@ -19,6 +19,7 @@ namespace TarodevController
         private FrameInput _frameInput;
         private Vector2 _frameVelocity;
         private bool _cachedQueryStartInColliders;
+        public GameObject winObject;
 
         #region Interface
 
@@ -32,6 +33,7 @@ namespace TarodevController
 
         private void Awake()
         {
+            winObject.SetActive(false);
             _rb = GetComponent<Rigidbody2D>();
             _col = GetComponent<CapsuleCollider2D>();
 
@@ -112,6 +114,16 @@ namespace TarodevController
             }
 
             Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
+        }
+
+        public void OnCollision2D(Collider2D collision)
+        {
+            if(collision.CompareTag("Finish")){
+
+                winObject.SetActive(true);
+                Time.timeScale = 0;
+
+            }
         }
 
         #endregion
