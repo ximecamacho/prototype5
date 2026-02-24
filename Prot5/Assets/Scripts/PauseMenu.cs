@@ -8,6 +8,7 @@ public class PauseMenu : MonoBehaviour
     private bool _isPaused;
     private GameObject _pausePanel;
     private Toggle _debugToggle;
+    private Toggle _pitchToggle;
 
     private void Start()
     {
@@ -71,7 +72,15 @@ public class PauseMenu : MonoBehaviour
                 _micInput.DebugMode = isOn;
         });
 
-        CreateLabel(_pausePanel.transform, "Debug:  Hold [,] = Yellow   Hold [.] = Red", 20, new Vector2(0, -100));
+        _pitchToggle = CreateToggle(_pausePanel.transform, "Use Pitch (off = Volume)", new Vector2(0, -100));
+        _pitchToggle.isOn = _micInput != null && _micInput.UsePitch;
+        _pitchToggle.onValueChanged.AddListener(isOn =>
+        {
+            if (_micInput != null)
+                _micInput.UsePitch = isOn;
+        });
+
+        CreateLabel(_pausePanel.transform, "Debug:  Hold [,] = Yellow   Hold [.] = Red", 20, new Vector2(0, -160));
     }
 
     private static GameObject CreatePanel(Transform parent)

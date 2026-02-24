@@ -63,11 +63,7 @@ private float movementX = 0;
 
         }
 
-        if (zone != 0)
-        {
-            moveMap();
-            
-        }
+        
         
 
 
@@ -77,7 +73,6 @@ private float movementX = 0;
     private void moveMap()
     {
 
-        player.ExecuteJump();
         /*Vector3 movementVector = new Vector3(-10, 0, 0);
         movementX = movementVector.x;*/
 

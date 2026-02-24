@@ -33,6 +33,11 @@ public class PlayerRespawn : MonoBehaviour
             Respawn();
     }
 
+    public void SetSpawnPoint(Vector3 point)
+    {
+        _spawnPoint = point;
+    }
+
     private void Respawn()
     {
         _rb.linearVelocity = Vector2.zero;
